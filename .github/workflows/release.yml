@@ -10,15 +10,13 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
+        with:
+          # need this to also fetch tags
+          fetch-depth: 0
 
       - name: Build release tarball
         # run as root; current Ubuntu podman breaks user networking ("could not find slirp4netns")
         run: sudo PUBLISH_TAR=1 tests/run-apt
 
       - name: Create GitHub release
-        uses: docker://antonyurchenko/git-release:latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CHANGELOG_FILE: "NEWS"
-        with:
-          args: umockdev-*.tar.xz
+        uses: eloquent/github-release-action@v2
